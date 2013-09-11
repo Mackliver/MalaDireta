@@ -24,20 +24,7 @@ class PDF extends PDFB {
     function versoMalaDireta($pdf, $oBoleto) {
 		$pdf->Image("img/verso_boleto.jpg", 12, 0,186,297);
 		$pdf->SetFont("Helvetica", "B", 10);
-		$pdf->Text(20,6,'Observações');
-		
-		
-		if(isset($obs)){
-			
-			$contaObs = count($obs);
-			
-			
-			$pdf->SetFont("Helvetica", "", 10);
-			$pdf->Text(22,20,".");
-			$pdf->Text(23,25,".");
-		}
-		
-		
+		$pdf->Text(22,6,'Observações');
 		
 		$yTopo = 116;
 		$xTopo = 65;

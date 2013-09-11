@@ -9,11 +9,23 @@ if(isset($_GET['erro'])){
 		break;
 		
 		case 2;
-		$erro = "Erro: Um ou mais campos estÃ£o vazios.";
+		$erro = "Erro: Um ou mais campos estão vazios.";
 		break;
 		
 		case 3;
-		$erro = "Um grave erro ocorreu no processo, impossivÃ©l continuar.<br/>Contate o administrador do sistema.";
+		$erro = "Base de importação só permite arquivos CSV ou TXT.";
+		break;
+		
+		case 4;
+		$erro = "Anexo da carta só permite arquivos JPG ou PNG.";
+		break;
+		
+		case 5;
+		$erro = "Erro no Upload, verifique o caminho de destinho.";
+		break;
+		
+		case 6;
+		$erro = "Erro Fatal: Não foi possivel criar o PDF, chame o administrador do sistema";
 		break;
 		
 		default;

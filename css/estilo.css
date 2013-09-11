@@ -1,14 +1,14 @@
 @charset "utf-8";
 /* CSS Document */
-body,header,article,aside,section,footer,nav,div,h1,h2,h3,p{margin:0 auto;font-family:Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;color:#969696;}
+body,header,article,aside,section,footer,nav,div,h1,h2,h3,p{margin:0 auto;font-family:Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;color:#434343;}
 #margin{width:960px;min-height:600px;}
 .wrapper,header,footer{width:100%;height:auto;border:none;}
-.wrapper1{width:600px;}
-.titulo{background:url(../img/logo.jpg) top left no-repeat;font-size:17px;width:500px;height:100px;padding:40px 0 0 140px;text-align:center;}
-#formEnvio{width:650px;margin:0 auto;}
+.wrapper1{width:650px;}
+.titulo{background:url(../img/logo.jpg) top left no-repeat;font-size:17px;width:500px;height:100px;padding:35px 0 0 140px;text-align:center;}
+#formEnvio{width:760px;margin:0 auto;}
 #formEnvio fieldset{padding:0px 25px 20px;color:#2B2B2B;}
 #formEnvio textarea{padding:8px;font-family:Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;}
-.legendIn{padding:15px 0px 2px 0px;font-weight:bold;}
+.legendIn{padding:7px 0px 2px 0px;font-weight:bold;}
 #erro{color:#FF0000;margin:0px 30px;}
 .botaoEnviar{margin:10px 10px 0px 0px;padding:5px 10px;}
 .botao{width:auto;padding:5px 7px;margin:15px 30px 0px 0px; background:#00CC66;border:1px solid;margin:2px;}

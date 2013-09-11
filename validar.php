@@ -1,94 +1,90 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Sistema de Mala Direta - CASF</title>
+<meta charset="ISO-8859-1">
+<meta name="author" content="Mackliver Roll" />
+<meta name="robots" content="none" />
+<meta name="robots" content="noindex,nofollow" />
+<title>CASF - Sistema de Mala Direta</title>
 <link rel="stylesheet" href="css/estilo.css" type="text/css" />
 </head>
 
 <body>
 <div id="margin">
 	<header>
-    	<h2 class="titulo">Caixa de AssistÃªncia dos FuncionÃ¡rios do Banco da AmazÃ´nia<br>Sistema de Mala Direta</h2>
+    	<h2 class="titulo">Caixa de Assistência dos Funcionários do Banco da Amazônia<br>Sistema de Mala Direta</h2>
     </header>
     <div class="wrapper1">
 <?php
-//setlocale(LC_ALL, "pt_BR","BR");
-//ini_set( 'default_charset', 'UFT-8');
-ini_set('max_execution_time', 600);
+ini_set('memory_limit', '128M');
+ini_set('max_execution_time', 100);
 
 include('processa_arquivo.php');
 include_once('pdf.php');
 
 
 if(isset($_POST['enviar'])){
-//Arquivo Base para ImportaÃ§Ã£o.
-$BaseNome	= $_FILES['base']['name'];
-$BaseTmp	= $_FILES['base']['tmp_name'];
-$BaseSize	= $_FILES['base']['size'];
+//Arquivo Base para Importação.
+$baseNome	= $_FILES['base']['name'];
+$baseTmp	= $_FILES['base']['tmp_name'];
 
 //Anexo para carta.
-$AnexoNome	= $_FILES['anexo']['name'];
-$AnexoTmp	= $_FILES['anexo']['tmp_name'];
-$AnexoSize	= $_FILES['anexo']['size'];
+$anexoNome	= $_FILES['anexo']['name'];
+$anexoTmp	= $_FILES['anexo']['tmp_name'];
 
-//Processa o arquivo base de importaÃ§Ã£o
-$ExtBase = explode('.',$BaseNome);
-$ExtBase = end($ExtBase);
-		
-//Processa o anexo da carta
-$ExtAnexo = explode('.',$AnexoNome);
-$ExtAnexo = end($ExtAnexo);
-//$extensaoFim = array_pop($extensaoInicio);
+//Processa os arquivos para saber sua extensão
+$exBase = pathinfo($baseNome, PATHINFO_EXTENSION);
+$exAnexo = pathinfo($anexoNome, PATHINFO_EXTENSION);
 
-
-
-//verifica se os arquivos estÃ£o vazios caso esteja retorna um erro.
-if($BaseNome == '' and $AnexoNome == ''){
+//verifica se os arquivos estão vazios caso esteja retorna um erro.
+if(empty($baseNome) and empty($anexoNome)){
 	header('Location: index.php?erro=1');
 	break;
-}
-if($BaseNome == '' xor $AnexoNome == ''){
+}elseif(empty($baseNome) xor empty($anexoNome)){
 	header('Location: index.php?erro=2');
 	break;
 }
-//verifica se os arquivos tem a extensÃ£o correta caso nÃ£o retorna um erro.
-//if($ExtBase != 'csv' and $ExtAnexo != 'pdf'){
-//	header('Location: index.php?erro=Erro: Verifique as extensÃµes dos arquivos.');
-//	break;
-//}
 
+//Verifica as extenções dos arquivos, caso não estaja correto retorna um erro.
+if($exBase != "csv" and $exBase != "txt"){
+	header('Location: index.php?erro=3');
+	break;
+}elseif($exAnexo != "jpg" and $exAnexo != "jpeg" and $exAnexo != "png"){
+	header('Location: index.php?erro=4');
+	break;
+}
+
+// Renomeia os arquivos
+$novoNomeBase  = md5($baseNome).".".$exBase;
+$novoNomeAnexo = md5($anexoNome).".".$exAnexo;
 
 
 //Pastas de destino
-$PatchAquivoBase  = "arquivo_base/";
-$PatchAquivoAnexo = "arquivo_anexo/";
+$patchAquivoBase  = "arquivo_base/";
+$patchAquivoAnexo = "arquivo_anexo/";
 
 //Move os arquivos para as pastas de destino
-$UpBase = move_uploaded_file($BaseTmp, $PatchAquivoBase.$BaseNome);
-$UpAnexo = move_uploaded_file($AnexoTmp, $PatchAquivoAnexo.$AnexoNome);
+$upBase = move_uploaded_file($baseTmp, $patchAquivoBase.$novoNomeBase);
+$upAnexo = move_uploaded_file($anexoTmp, $patchAquivoAnexo.$novoNomeAnexo);
 
 //Verifica se os arquivos foram enviados.
-if($_FILES['base']['error'] xor $_FILES['anexo']['error']){
-	header('Location: index.php?erro=Erro: Erro no UPLOAD, tente de novo.');
+if((!$upBase) xor (!$upAnexo)){
+	header('Location: index.php?erro=5');
 	break;
 }
 
 
-
 /*
-
- ComeÃ§a a Montar o PDF
-
+ Caso os arquvos passem pela válidação o sistema começa a Montar o PDF.
 */
 
 $path = getcwd();
-$arquivo = $PatchAquivoBase.$BaseNome;
-$img     = $PatchAquivoAnexo.$AnexoNome;
+$arquivo = $patchAquivoBase.$novoNomeBase;
+$img     = $patchAquivoAnexo.$novoNomeAnexo;
+
 
 $oDados = new ProcessaArquivo($arquivo);        
 $aBoletos = $oDados->getBoletos();
-
 
 $pdf  = new PDF("P","mm","A4");
 $pdf->Open();
@@ -106,22 +102,43 @@ foreach($aBoletos as $endereco) {
 	
     $pdf->AddPage('P');
     $pdf->versoMalaDireta($pdf, $endereco);
+	
+		$pdf->SetFont("Helvetica", "", 10);
+		if(!empty($_POST['observacoes'])){
+			
+			$observacoes = $_POST['observacoes'];
+			$quebratexto = wordwrap($observacoes,100, "\n");
+			$arr = explode("\n",$quebratexto);
+			$xObs = 22;
+			$yObs = 17;
+			
+			$pdf->Text(32,$yObs,trim(strip_tags($arr[0])));
+			
+			$yObs = 22;
+			$contArr = count($arr);
+
+			for($i = 1;$i <= $contArr;$i++){
+				$pdf->Text($xObs,$yObs,trim(strip_tags($arr[$i])));
+				$yObs = $yObs+5; 
+					
+			}
+		}
+		
     //$cont++;
 }
 
 $path .= '/cartas/';
-$arquivo = $assunto. date('dmY-hi')  .'.pdf';
+$arquivo = $assunto. date('d-m-Y-Hi').'.pdf';
 $pdf->Output($path . $arquivo,"F");
 
-echo "Arquivo PDF criado com sucesso contendo $total cartas, ";
-echo "<a href=cartas/".$arquivo." target="."_blank"." >".$arquivo."</a><br><br>";
+echo "Arquivo PDF criado com sucesso contendo $total cartas: ";
+echo "Arquivo: "."<a href=cartas/".$arquivo." target="."_blank"." >".$arquivo."</a><br><br>";
 echo "<input type="."button"." value=\" Voltar \" onClick=\"location.href='index.php'\" class=\"botaoEnviar\"/>";
 
 $pdf->closeParsers();
 
-
 }else{
-	header('Location: index.php?erro=3.');
+	header('Location: index.php?erro=6');
 }
 ?>
 </div>
