@@ -28,6 +28,14 @@ if(isset($_GET['erro'])){
 		$erro = "Erro Fatal: Não foi possivel criar o PDF, chame o administrador do sistema";
 		break;
 		
+		case 4;
+		$erro = "Erro 4";
+		break;
+		
+		case 5;
+		$erro = "Erro 5";
+		break;
+		
 		default;
 		$erro = "Um erro inesperado parou o sistema!";
 		break;
